@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="jweb_promotion_manager" default="dist" basedir=".">
+
+    <property environment="env" />
+    <property name="groupId" value="mpos" />
+    <property name="artifactId" value="com.youzijie.jweb_promotion_manager" />
+    <property name="version" value="1.0.0" />
+
+    <property name="build" value="${basedir}/build" />
+    <property name="classes" value="${basedir}/build/classes" />
+    <property name="lib" value="${basedir}/lib" />
+    <property name="dist" value="/data/deploy/${groupId}/${ant.project.name}" />
+
+    <!--==== clean ==== -->
+    <target name="clean">
+        <delete dir="${build}" />
+    </target>
+
+    <!--==== compile java source ==== -->
+    <target name="compile" depends="clean">
+        <mkdir dir="${classes}" />
+        <javac srcdir="${basedir}/src" destdir="${classes}" debug="on">
+            <classpath>
+                <fileset dir="${lib}">
+                    <include name="*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!--==== archive to jar ==== -->
+    <target name="jar" depends="compile">
+        <jar destfile="${build}/${artifactId}-${version}.jar" basedir="${classes}" />
+    </target>
+
+    <!--==== copy to distribute path ==== -->
+    <target name="dist" depends="jar">
+        <copy todir="${dist}" preservelastmodified="true">
+            <fileset dir="${basedir}/src/main/webapp">
+                <exclude name="**/com/**" />
+                <exclude name="**/.svn/**" />
+                <exclude name="**/bin/**" />
+                <exclude name="**/lib/**" />
+                <exclude name="**/js/**" />
+                <exclude name="**/css/**" />
+                <exclude name="**/html/**" />
+                <exclude name="**/img/**" />
+            </fileset>
+        </copy>
+        <mkdir dir="${dist}/WEB-INF/classes"></mkdir>
+        <copy todir="${dist}/WEB-INF/classes" preservelastmodified="true">
+            <fileset dir="${basedir}/src/main/resources">
+                <exclude name="**/.svn/**" />
+            </fileset>
+        </copy>
+        <copy file="${build}/${artifactId}-${version}.jar" todir="${dist}/WEB-INF/lib"
+              preservelastmodified="true" />
+        <copy todir="${dist}/WEB-INF/lib" preservelastmodified="true">
+            <fileset dir="${lib}">
+                <exclude name="javaee*" />
+            </fileset>
+        </copy>
+
+    </target>
+
+</project>
